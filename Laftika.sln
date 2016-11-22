@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B065C001-6A2E-446D-81AA-3B69381B0512}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CDD101BD-C30A-4031-A2ED-FAF296FC57E9}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Laftika", "src\Laftika\Laftika.xproj", "{0275498B-5063-41BC-A0F0-1B6508EBBCB1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0275498B-5063-41BC-A0F0-1B6508EBBCB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0275498B-5063-41BC-A0F0-1B6508EBBCB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0275498B-5063-41BC-A0F0-1B6508EBBCB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0275498B-5063-41BC-A0F0-1B6508EBBCB1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0275498B-5063-41BC-A0F0-1B6508EBBCB1} = {B065C001-6A2E-446D-81AA-3B69381B0512}
+	EndGlobalSection
+EndGlobal
