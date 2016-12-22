@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Laftika.Models
 {
-    public class BloggingContext : DbContext
+    public class DatabaseContext : DbContext
     {
-        public DbSet<Blog> Blogs { get; set; }
-        public DbSet<Post> Posts { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -19,21 +19,13 @@ namespace Laftika.Models
         }
     }
 
-    public class Blog
+    public class User
     {
-        public int BlogId { get; set; }
-        public string Url { get; set; }
-
-        public List<Post> Posts { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int UserId { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Email { get; set; }
     }
 
-    public class Post
-    {
-        public int PostId { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-
-        public int BlogId { get; set; }
-        public Blog Blog { get; set; }
-    }
 }
