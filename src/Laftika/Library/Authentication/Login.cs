@@ -14,20 +14,20 @@ namespace Laftika.Library.Authentication
 {
     public class Login
     {
-        private string _username;
-        private string _password;
-        private HttpContext _context;
-        UserRepository _userRepository = new UserRepository(new DatabaseContext());
+        private string username;
+        private string password;
+        private HttpContext context;
+        UserRepository userRepository = new UserRepository(new DatabaseContext());
 
         public Login(HttpContext context)
         {
-            _context = context;
+            context = context;
         }
 
         public bool CreateAuthentication(string username, string password)
         {
-            _username = username;
-            _password = password;
+            username = username;
+            password = password;
 
             if (CheckExistsAccount())
             {
@@ -40,10 +40,10 @@ namespace Laftika.Library.Authentication
         public bool CheckAuthentication()
         {
             int count = 0;
-            if (!string.IsNullOrEmpty(_context.Session.GetString("SessionKey")))
+            if (!string.IsNullOrEmpty(context.Session.GetString("SessionKey")))
             {
-                count = (from a in _userRepository.GetUsers()
-                         where a.SessionKey == _context.Session.GetString("SessionKey")
+                count = (from a in userRepository.GetUsers()
+                         where a.SessionKey == context.Session.GetString("SessionKey")
                          select a).Count();
             }
 
@@ -53,41 +53,41 @@ namespace Laftika.Library.Authentication
         public void DestroyAuthentication()
         {
             DestroySessionKey();
-            _context.Session.Remove("SessionKey");
+            context.Session.Remove("SessionKey");
         }
 
         public async Task<bool> CreateSessionKey()
         {
             string sessionKey = Secure.CreateKey();
 
-            var user = (from a in _userRepository.GetUsers()
-                        where a.Username == _username
+            var user = (from a in userRepository.GetUsers()
+                        where a.Username == username
                         select a).FirstOrDefault();
 
             if (user != null)
             {
                 user.SessionKey = sessionKey;
 
-                _userRepository.UpdateUser(user);
-                await _userRepository.Save();
+                userRepository.UpdateUser(user);
+                await userRepository.Save();
             }
 
-            _context.Session.SetString("SessionKey", sessionKey);
+            context.Session.SetString("SessionKey", sessionKey);
 
             return true;
         }
 
         public async Task<bool> DestroySessionKey()
         {
-            var user = (from a in _userRepository.GetUsers()
-                        where a.SessionKey == _context.Session.GetString("SessionKey")
+            var user = (from a in userRepository.GetUsers()
+                        where a.SessionKey == context.Session.GetString("SessionKey")
                         select a).FirstOrDefault();
 
             if (user != null)
             {
                 user.SessionKey = null;
-                _userRepository.UpdateUser(user);
-                await _userRepository.Save();
+                userRepository.UpdateUser(user);
+                await userRepository.Save();
             }
 
             return true;
@@ -95,10 +95,10 @@ namespace Laftika.Library.Authentication
 
         public bool CheckExistsAccount()
         {
-            string securedPassword = Secure.HashString(_password);
+            string securedPassword = Secure.HashString(password);
 
-            var numberAccounts = (from a in _userRepository.GetUsers()
-                                  where a.Username == _username && a.Password == securedPassword
+            var numberAccounts = (from a in userRepository.GetUsers()
+                                  where a.Username == username && a.Password == securedPassword
                                   select a).Count();
 
             return numberAccounts == 1;
@@ -106,8 +106,8 @@ namespace Laftika.Library.Authentication
 
         public User GetUserObject()
         {
-            var user = (from a in _userRepository.GetUsers()
-                        where a.SessionKey == _context.Session.GetString("SessionKey")
+            var user = (from a in userRepository.GetUsers()
+                        where a.SessionKey == context.Session.GetString("SessionKey")
                         select a).FirstOrDefault();
 
             return user;

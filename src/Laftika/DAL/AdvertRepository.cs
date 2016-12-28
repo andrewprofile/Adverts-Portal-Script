@@ -10,41 +10,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Laftika.DAL
 {
-    public class UserRepository
+    public class AdvertRepository
     {
         private DatabaseContext db;
 
-        public UserRepository(DatabaseContext db)
+        public AdvertRepository(DatabaseContext db)
         {
             this.db = db;
         }
 
-        public User GetUserById(int id)
+        public Advert GetAdvertById(int id)
         {
-            var user = db.Users.Find(id);
+            var advert = db.Adverts.Find(id);
 
-            return user;
+            return advert;
         }
 
-        public IEnumerable<User> GetUsers()
+        public IEnumerable<Advert> GetAdverts()
         {
-            return db.Users.ToList();
+            return db.Adverts.ToList();
         }
 
-        public void InsertUser(User user)
+        public void InsertAdvert(Advert advert)
         {
-            db.Users.Add(user);
+            db.Adverts.Add(advert);
         }
 
-        public void DeleteUser(int userId)
+        public void DeleteUser(int advertId)
         {
-            User user = db.Users.Find(userId);
-            db.Users.Remove(user);
+            Advert advert = db.Adverts.Find(advertId);
+            db.Adverts.Remove(advert);
         }
 
-        public void UpdateUser(User user)
+        public void UpdateAdvert(Advert advert)
         {
-            db.Entry(user).State = EntityState.Modified;
+            db.Entry(advert).State = EntityState.Modified;
         }
 
         public async Task<bool> Save()

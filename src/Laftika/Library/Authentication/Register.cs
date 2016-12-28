@@ -12,18 +12,16 @@ namespace Laftika.Library.Authentication
 {
     public class Register
     {
-        private string _username;
-        private string _password;
-        private string _email;
-        private int _referral;
-        UserRepository _userRepository = new UserRepository(new DatabaseContext());
+        private string username;
+        private string password;
+        private string email;
+        UserRepository userRepository = new UserRepository(new DatabaseContext());
 
-        public async Task<bool> CreateAccount(string username, string password, string email, int referral)
+        public async Task<bool> CreateAccount(string username, string password, string email)
         {
-            _username = username;
-            _password = password;
-            _email = email;
-            _referral = referral;
+            username = username;
+            password = password;
+            email = email;
 
             if (GetNumbersAccounts())
             {
@@ -37,18 +35,18 @@ namespace Laftika.Library.Authentication
 
         public async Task<bool> AddAccountToDatabase()
         {
-            string securedPassword = Secure.HashString(_password);
+            string securedPassword = Secure.HashString(password);
 
-            _userRepository.InsertUser(new User { Username = _username, Password = securedPassword, Email = _email });
-            await _userRepository.Save();
+            userRepository.InsertUser(new User { Username = username, Password = securedPassword, Email = email });
+            await userRepository.Save();
 
             return true;
         }
 
         public bool GetNumbersAccounts()
         {
-            var isExists = (from a in _userRepository.GetUsers()
-                            where a.Email == _email || a.Username == _username
+            var isExists = (from a in userRepository.GetUsers()
+                            where a.Email == email || a.Username == username
                             select a).Count();
 
             return isExists == 0;
