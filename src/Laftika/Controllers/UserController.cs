@@ -35,14 +35,12 @@ namespace Laftika.Controllers
             {
                 return RedirectToAction("Profile", "User");
             }
-            else
+
+            if (!String.IsNullOrEmpty(model.Username) && !String.IsNullOrEmpty(model.Password))
             {
-                if (!String.IsNullOrEmpty(model.Username) && !String.IsNullOrEmpty(model.Password))
+                if (login.CreateAuthentication(model.Username, model.Password))
                 {
-                    if (login.CreateAuthentication(model.Username, model.Password))
-                    {
-                        return RedirectToAction("Profile", "User");
-                    }
+                    return RedirectToAction("Profile", "User");
                 }
             }
 
@@ -59,12 +57,10 @@ namespace Laftika.Controllers
             {
                 return RedirectToAction("Profile", "User");
             }
-            else
+
+            if (!String.IsNullOrEmpty(model.Username) && !String.IsNullOrEmpty(model.Password) && !String.IsNullOrEmpty(model.Email))
             {
-                if (!string.IsNullOrEmpty(model.Username) && !string.IsNullOrEmpty(model.Password) && !string.IsNullOrEmpty(model.Email))
-                {
-                    bool result = await register.CreateAccount(model.Username, model.Password, model.Email);
-                }
+                bool result = await register.CreateAccount(model.Username, model.Password, model.Email);
             }
 
             return RedirectToAction("Index", "User");
