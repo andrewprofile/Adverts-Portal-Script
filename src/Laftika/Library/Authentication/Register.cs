@@ -15,13 +15,13 @@ namespace Laftika.Library.Authentication
         private string username;
         private string password;
         private string email;
-        UserRepository userRepository = new UserRepository(new DatabaseContext());
+        private UserRepository userRepository = new UserRepository(new DatabaseContext());
 
         public async Task<bool> CreateAccount(string username, string password, string email)
         {
-            username = username;
-            password = password;
-            email = email;
+            this.username = username;
+            this.password = password;
+            this.email = email;
 
             if (GetNumbersAccounts())
             {

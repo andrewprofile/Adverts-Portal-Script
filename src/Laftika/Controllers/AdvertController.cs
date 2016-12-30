@@ -36,6 +36,8 @@ namespace Laftika.Controllers
             advertRepository.InsertAdvert(model);
             await advertRepository.Save();
 
+            ViewBag.AlertMessage = "Poprawnie!";
+
             return RedirectToAction("Index", "Advert", new { message = ViewBag.AlertMessage });
         }
     }

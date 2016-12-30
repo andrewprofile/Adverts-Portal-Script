@@ -17,17 +17,17 @@ namespace Laftika.Library.Authentication
         private string username;
         private string password;
         private HttpContext context;
-        UserRepository userRepository = new UserRepository(new DatabaseContext());
+        private UserRepository userRepository = new UserRepository(new DatabaseContext());
 
         public Login(HttpContext context)
         {
-            context = context;
+            this.context = context;
         }
 
         public bool CreateAuthentication(string username, string password)
         {
-            username = username;
-            password = password;
+            this.username = username;
+            this.password = password;
 
             if (CheckExistsAccount())
             {
