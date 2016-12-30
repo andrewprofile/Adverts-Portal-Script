@@ -30,7 +30,6 @@ namespace Laftika.Controllers
         {
             var db = new DatabaseContext();
             Login login = new Login(HttpContext);
-            ViewBag.AlertMessage = "error";
 
             if (login.CheckAuthentication())
             {
@@ -45,13 +44,9 @@ namespace Laftika.Controllers
                         return RedirectToAction("Profile", "User");
                     }
                 }
-                else
-                {
-                    ViewBag.AlertMessage = "nook";
-                }
             }
 
-            return RedirectToAction("Index", "User", new { message = ViewBag.AlertMessage });
+            return RedirectToAction("Index", "User");
         }
 
         [HttpPost]
@@ -59,8 +54,6 @@ namespace Laftika.Controllers
         {
             Login login = new Login(HttpContext);
             Register register = new Register();
-            ViewBag.AlertMessage = "errors";
-
 
             if (login.CheckAuthentication())
             {
@@ -71,20 +64,10 @@ namespace Laftika.Controllers
                 if (!string.IsNullOrEmpty(model.Username) && !string.IsNullOrEmpty(model.Password) && !string.IsNullOrEmpty(model.Email))
                 {
                     bool result = await register.CreateAccount(model.Username, model.Password, model.Email);
-
-                    if (result)
-                    {
-                        ViewBag.AlertMessage = "ok";
-                    }
-                }
-                else
-                {
-                    ViewBag.AlertMessage = "nook";
                 }
             }
 
-
-            return RedirectToAction("Index", "User", new { message = ViewBag.AlertMessage });
+            return RedirectToAction("Index", "User");
         }
 
         public IActionResult Logout()
@@ -94,14 +77,9 @@ namespace Laftika.Controllers
             if (login.CheckAuthentication())
             {
                 login.DestroyAuthentication();
-                ViewBag.AlertMessage = "ok";
-            }
-            else
-            {
-                ViewBag.AlertMessage = "nook";
             }
 
-            return RedirectToAction("Index", "User", new { message = ViewBag.AlertMessage });
+            return RedirectToAction("Index", "User");
         }
     }
 }
