@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Laftika.Models;
 using Microsoft.AspNetCore.Http;
 using Laftika.DAL;
@@ -14,91 +10,93 @@ namespace Laftika.Library.Authentication
 {
     public class Login
     {
-        private string username;
-        private string password;
-        private HttpContext context;
-        private UserRepository userRepository = new UserRepository(new DatabaseContext());
+        private string _username;
+        private string _password;
+        private readonly HttpContext _context;
+        private readonly IGenericRepository<User> _userRepository;
 
-        public Login(HttpContext context)
+        public Login(HttpContext context, IGenericRepository<User> userRepository)
         {
-            this.context = context;
+            _context = context;
+            _userRepository = userRepository;
         }
 
-        public bool CreateAuthentication(string username, string password)
+        public async Task<bool> CreateAuthentication(string username, string password)
         {
-            this.username = username;
-            this.password = password;
+            _username = username;
+            _password = password;
 
-            if (CheckExistsAccount())
+            if (!CheckExistsAccount())
             {
-                CreateSessionKey();
-                return true;
+                return false;
             }
-            return false;
+
+            return await CreateSessionKey();
         }
 
         public bool CheckAuthentication()
         {
             int count = 0;
-            if (!string.IsNullOrEmpty(context.Session.GetString("SessionKey")))
+            if (!string.IsNullOrEmpty(_context.Session.GetString("SessionKey")))
             {
-                count = (from a in userRepository.GetUsers()
-                         where a.SessionKey == context.Session.GetString("SessionKey")
+                count = (from a in _userRepository.GetAll()
+                         where a.SessionKey == _context.Session.GetString("SessionKey")
                          select a).Count();
             }
 
             return count != 0;
         }
 
-        public void DestroyAuthentication()
+        public async Task DestroyAuthentication()
         {
-            DestroySessionKey();
-            context.Session.Remove("SessionKey");
+            await DestroySessionKey();
+            _context.Session.Remove("SessionKey");
         }
 
         public async Task<bool> CreateSessionKey()
         {
             string sessionKey = Secure.CreateKey();
 
-            var user = (from a in userRepository.GetUsers()
-                        where a.Username == username
+            var user = (from a in _userRepository.GetAll()
+                        where a.Username == _username
                         select a).FirstOrDefault();
 
             if (user != null)
             {
                 user.SessionKey = sessionKey;
 
-                userRepository.UpdateUser(user);
-                await userRepository.Save();
+                _userRepository.Update(user);
+                await _userRepository.Save();
             }
 
-            context.Session.SetString("SessionKey", sessionKey);
+            _context.Session.SetString("SessionKey", sessionKey);
 
             return true;
         }
 
         public async Task<bool> DestroySessionKey()
         {
-            var user = (from a in userRepository.GetUsers()
-                        where a.SessionKey == context.Session.GetString("SessionKey")
+            var user = (from a in _userRepository.GetAll()
+                        where a.SessionKey == _context.Session.GetString("SessionKey")
                         select a).FirstOrDefault();
 
-            if (user != null)
+            if (user == null)
             {
-                user.SessionKey = null;
-                userRepository.UpdateUser(user);
-                await userRepository.Save();
+                return true;
             }
 
-            return true;
+            user.SessionKey = null;
+            _userRepository.Update(user);
+
+            return await _userRepository.Save();
         }
 
         public bool CheckExistsAccount()
         {
-            string securedPassword = Secure.HashString(password);
+            string securedPassword = Secure.HashString(_password);
 
-            var numberAccounts = (from a in userRepository.GetUsers()
-                                  where a.Username == username && a.Password == securedPassword
+            var numberAccounts = (from a in _userRepository.GetAll()
+                                  where a.Username == _username && a.Password == securedPassword
                                   select a).Count();
 
             return numberAccounts == 1;
@@ -106,11 +104,9 @@ namespace Laftika.Library.Authentication
 
         public User GetUserObject()
         {
-            var user = (from a in userRepository.GetUsers()
-                        where a.SessionKey == context.Session.GetString("SessionKey")
-                        select a).FirstOrDefault();
-
-            return user;
+            return (from a in _userRepository.GetAll()
+                where a.SessionKey == _context.Session.GetString("SessionKey")
+                select a).FirstOrDefault();
         }
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Laftika.Models;
 using Laftika.DAL;
 
@@ -12,41 +9,43 @@ namespace Laftika.Library.Authentication
 {
     public class Register
     {
-        private string username;
-        private string password;
-        private string email;
-        private UserRepository userRepository = new UserRepository(new DatabaseContext());
+        private string _username;
+        private string _password;
+        private string _email;
+        private readonly IGenericRepository<User> _userRepository;
+
+        public Register(IGenericRepository<User> userRepository)
+        {
+            _userRepository = userRepository;
+        }
 
         public async Task<bool> CreateAccount(string username, string password, string email)
         {
-            this.username = username;
-            this.password = password;
-            this.email = email;
+            _username = username;
+            _password = password;
+            _email = email;
 
-            if (GetNumbersAccounts())
+            if (!GetNumbersAccounts())
             {
-                await AddAccountToDatabase();
-
-                return true;
+                return false;
             }
 
-            return false;
+            return await AddAccountToDatabase();
         }
 
         public async Task<bool> AddAccountToDatabase()
         {
-            string securedPassword = Secure.HashString(password);
+            string securedPassword = Secure.HashString(_password);
 
-            userRepository.InsertUser(new User { Username = username, Password = securedPassword, Email = email });
-            await userRepository.Save();
+            _userRepository.Insert(new User { Username = _username, Password = securedPassword, Email = _email });
 
-            return true;
+            return await _userRepository.Save();
         }
 
         public bool GetNumbersAccounts()
         {
-            var isExists = (from a in userRepository.GetUsers()
-                            where a.Email == email || a.Username == username
+            var isExists = (from a in _userRepository.GetAll()
+                            where a.Email == _email || a.Username == _username
                             select a).Count();
 
             return isExists == 0;
