@@ -38,6 +38,7 @@ namespace Laftika
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddScoped<DbContext>(provider => provider.GetService<DatabaseContext>());
             services.AddEntityFramework()
                 .AddDbContext<DatabaseContext>(options => options.UseSqlite(

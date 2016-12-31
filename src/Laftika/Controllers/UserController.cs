@@ -10,10 +10,10 @@ namespace Laftika.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly Login _login;
 
-        public UserController(IGenericRepository<User> userRepository)
+        public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _login = new Login(HttpContext, _userRepository);

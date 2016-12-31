@@ -12,9 +12,9 @@ namespace Laftika.Library.Authentication
         private string _username;
         private string _password;
         private string _email;
-        private readonly IGenericRepository<User> _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public Register(IGenericRepository<User> userRepository)
+        public Register(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
@@ -44,11 +44,7 @@ namespace Laftika.Library.Authentication
 
         public bool GetNumbersAccounts()
         {
-            var isExists = (from a in _userRepository.GetAll()
-                            where a.Email == _email || a.Username == _username
-                            select a).Count();
-
-            return isExists == 0;
+            return _userRepository.CountByUsernameOrEmail(_username, _email) == 0;
         }
     }
 }
