@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -23,7 +19,7 @@ namespace Laftika.Library.Authentication
 
         public static string CreateKey()
         {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var stringChars = new char[8];
             var random = new Random();
 
@@ -32,7 +28,7 @@ namespace Laftika.Library.Authentication
                 stringChars[i] = chars[random.Next(chars.Length)];
             }
 
-            return new String(stringChars);
+            return new string(stringChars);
         }
     }
 }

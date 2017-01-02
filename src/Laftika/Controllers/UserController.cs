@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Laftika.Library.Authentication;
 using Laftika.Models;
@@ -13,7 +10,14 @@ namespace Laftika.Controllers
 {
     public class UserController : Controller
     {
-        UserRepository userRepository = new UserRepository(new DatabaseContext());
+        private readonly IUserRepository _userRepository;
+        private readonly Login _login;
+
+        public UserController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+            _login = new Login(HttpContext, _userRepository);
+        }
 
         public IActionResult Index()
         {
@@ -28,51 +32,42 @@ namespace Laftika.Controllers
         [HttpPost]
         public IActionResult Login(User model)
         {
-            var db = new DatabaseContext();
-            Login login = new Login(HttpContext);
-
-            if (login.CheckAuthentication())
+            if (_login.CheckAuthentication())
             {
                 return RedirectToAction("Profile", "User");
             }
 
-            if (!String.IsNullOrEmpty(model.Username) && !String.IsNullOrEmpty(model.Password))
+            if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
-                if (login.CreateAuthentication(model.Username, model.Password))
-                {
-                    return RedirectToAction("Profile", "User");
-                }
+                return RedirectToAction("Index", "User");
             }
 
-            return RedirectToAction("Index", "User");
+            return RedirectToAction(_login.CreateAuthentication(model.Username, model.Password).IsCompleted ? "Profile" : "Index", "User");
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(User model)
         {
-            Login login = new Login(HttpContext);
-            Register register = new Register();
+            Register register = new Register(_userRepository);
 
-            if (login.CheckAuthentication())
+            if (_login.CheckAuthentication())
             {
                 return RedirectToAction("Profile", "User");
             }
 
-            if (!String.IsNullOrEmpty(model.Username) && !String.IsNullOrEmpty(model.Password) && !String.IsNullOrEmpty(model.Email))
+            if (!string.IsNullOrEmpty(model.Username) && !string.IsNullOrEmpty(model.Password) && !string.IsNullOrEmpty(model.Email))
             {
-                bool result = await register.CreateAccount(model.Username, model.Password, model.Email);
+                await register.CreateAccount(model.Username, model.Password, model.Email);
             }
 
             return RedirectToAction("Index", "User");
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            Login login = new Login(HttpContext);
-
-            if (login.CheckAuthentication())
+            if (_login.CheckAuthentication())
             {
-                login.DestroyAuthentication();
+                await _login.DestroyAuthentication();
             }
 
             return RedirectToAction("Index", "User");

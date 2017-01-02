@@ -1,57 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
 using Laftika.Models;
 using Microsoft.EntityFrameworkCore;
 
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Laftika.DAL
 {
-    public class UserRepository
+    public interface IUserRepository : IGenericRepository<User>
     {
-        private DatabaseContext db;
+        int  CountByUsernameAndPassword(string username, string password);
+        int  CountByUsernameOrEmail(string username, string email);
+        int  CountBySessionKey(string sessionKey);
+        User GetByUsername(string username);
+        User GetBySessionKey(string sessionKey);
+    }
 
-        public UserRepository(DatabaseContext db)
+    public class UserRepository : GenericRepository<User>, IUserRepository
+    {
+        public UserRepository(DbContext context) : base(context)
         {
-            this.db = db;
         }
 
-        public User GetUserById(int id)
-        {
-            var user = db.Users.Find(id);
+        public int CountByUsernameAndPassword(string username, string password) => (from a in GetAll()
+            where a.Username == username && a.Password == password
+            select a).Count();
 
-            return user;
-        }
+        public int CountByUsernameOrEmail(string username, string email) => (from a in GetAll()
+            where a.Email == email || a.Username == username
+            select a).Count();
 
-        public IEnumerable<User> GetUsers()
-        {
-            return db.Users.ToList();
-        }
+        public int CountBySessionKey(string sessionKey) => (from a in GetAll()
+            where a.SessionKey == sessionKey
+            select a).Count();
 
-        public void InsertUser(User user)
-        {
-            db.Users.Add(user);
-        }
+        public User GetByUsername(string username) => (from a in GetAll()
+            where a.Username == username
+            select a).FirstOrDefault();
 
-        public void DeleteUser(int userId)
-        {
-            User user = db.Users.Find(userId);
-            db.Users.Remove(user);
-        }
-
-        public void UpdateUser(User user)
-        {
-            db.Entry(user).State = EntityState.Modified;
-        }
-
-        public async Task<bool> Save()
-        {
-            await db.SaveChangesAsync();
-
-            return true;
-        }
+        public User GetBySessionKey(string sessionKey) => (from a in GetAll()
+            where a.SessionKey == sessionKey
+            select a).FirstOrDefault();
     }
 }
