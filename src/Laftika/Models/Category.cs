@@ -12,7 +12,7 @@ namespace Laftika.Models
     public class Category
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CategoryId { get; set; }
+        public int Id { get; set; }
         public int SubCategoryId { get; set; }
         public string Name { get; set; }
     }
