@@ -3,7 +3,7 @@
 > ## Abandoned! Or, rather, rebranded!
 >
 > andrewprofile/Adverts-Portal-Script has moved to the Laftika as
-> [Adverts-Script](https://github.com/Laftika/Adverts-Script)
+> [LaftikaAdvert](https://github.com/Laftika/LaftikaAdvert)
 >
 > Please use that package instead, and contribute issues and pull requests
 > against it I have closed issues and pull requests against andrewprofile/Adverts-Portal-Script at this
